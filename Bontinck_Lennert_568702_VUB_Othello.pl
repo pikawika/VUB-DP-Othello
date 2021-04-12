@@ -15,6 +15,9 @@ STUDENT INFO:
 /* Succeeds when it's single input argument is an integer between 1 and 8. Makes use of build in SWI Prolog between/3 predicate. */
 integer_between_1_and_8( Number ) :- between(1, 8, Number) .
 
+/* Succeeds when it's single input argument is an integer between 1 and 6. Makes use of build in SWI Prolog between/3 predicate. */
+integer_between_1_and_6( Number ) :- between(1, 6, Number) .
+
 /* Succeeds when it's single input argument is a valid representation of a board.
 	A board is represented as a list of lists (8 x 8) with each inner list representing a column and the elements representing the values in those columns.
 	Counting starts from 1, thus the top left is (1, 1), the bottom left is (1, 8), the bottom right is (8, 8) and so on. 
@@ -228,16 +231,16 @@ enclosing_piece( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, Boa
 																							integer_between_1_and_8(RowNumberNewPiece),
 																							integer_between_1_and_8(ColumnNumberOldPiece),
 																							integer_between_1_and_8(RowNumberOldPiece),
+																							%check viable amount of pieces enclosed
+																							integer_between_1_and_6(AmountOfPiecesEnclosed),
 																							%check piece
 																							is_piece( PlayerPieceToPlay ),
 																							%check board
 																							valid_board_representation( BoardState ),
 																							%check new piece is free
 																							empty_square( ColumnNumberNewPiece, RowNumberNewPiece, BoardState ),
-																							%check old piece is piece of current player -- broke
+																							%check old piece is piece of current player
 																							player_square( ColumnNumberOldPiece, RowNumberOldPiece, BoardState, PlayerPieceToPlay ),
-																							%check amount of pieces greater then 0
-																							AmountOfPiecesEnclosed > 0, 
 																							%move in right direction so we're on oponents piece and can start recusrion
 																							move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece, ColumnMovedNewPiece, RowMovedNewPiece),
 																							%do recursive check
@@ -245,7 +248,9 @@ enclosing_piece( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, Boa
 
 % The new piece is on the old piece and we don't have any pieces left, the path was correct.
 oponent_pieces_between_squares( ColumnNumberOldPiece, RowNumberOldPiece, 
-									ColumnNumberOldPiece, RowNumberOldPiece, _, 0 ) . 
+									ColumnNumberOldPiece, RowNumberOldPiece, _, _, 0 ) . 
+
+
 
 % We can still legally move so we do so
 oponent_pieces_between_squares( ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece, BoardState,
@@ -268,7 +273,11 @@ oponent_pieces_between_squares( ColumnNumberNewPiece, RowNumberNewPiece, ColumnN
 																					move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece, ColumnMovedNewPiece, RowMovedNewPiece),
 																					oponent_pieces_between_squares(ColumnMovedNewPiece, RowMovedNewPiece, ColumnNumberOldPiece, RowNumberOldPiece, BoardState, PlayerPieceToPlay, NewAmountOfPiecesEnclosed) .
 
+
+
 /* 	- Moving from new point to old point should be:
+        - rows and columns are equal:
+			- we're at the destination, don't move!
 		- rows are equal and:
 	      	- column new > column old: column new -- to find old
 		  	- column new < column old: column new ++ to find old
@@ -279,14 +288,17 @@ oponent_pieces_between_squares( ColumnNumberNewPiece, RowNumberNewPiece, ColumnN
 			- row new > row old, column new > column old: row new -- and column new -- to find old
 			- row new > row old, column new < column old: row new -- and column new ++ to find old
 			- row new < row old, column new > column old: row new ++ and column new -- to find old
-			- row new < row old, column new < column old: row new -- and column new ++ to find old */
-move_needed_between_squares(ColumnNumberNewPiece, RowNumberOldPiece, ColumnNumberOldPiece, RowNumberOldPiece,
-							ColumnMovedNewPiece, RowNumberOldPiece) :- ColumnNumberNewPiece > ColumnNumberOldPiece,
-																		ColumnMovedNewPiece is ColumnNumberNewPiece - 1 .
+			- row new < row old, column new < column old: row new ++ and column new ++ to find old */
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberOldPiece, ColumnNumberNewPiece, RowNumberOldPiece,
+							ColumnNumberNewPiece, RowNumberOldPiece) .
 																	
 move_needed_between_squares(ColumnNumberNewPiece, RowNumberOldPiece, ColumnNumberOldPiece, RowNumberOldPiece,
 	ColumnMovedNewPiece, RowNumberOldPiece) :- ColumnNumberNewPiece < ColumnNumberOldPiece,
 												ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .
+
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberOldPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+	ColumnMovedNewPiece, RowNumberOldPiece) :- ColumnNumberNewPiece > ColumnNumberOldPiece,
+												ColumnMovedNewPiece is ColumnNumberNewPiece - 1 .
 																	
 move_needed_between_squares(ColumnNumberOldPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
 	ColumnNumberOldPiece, RowMovedNewPiece) :- RowNumberNewPiece > RowNumberOldPiece,
@@ -296,6 +308,29 @@ move_needed_between_squares(ColumnNumberOldPiece, RowNumberNewPiece, ColumnNumbe
 	ColumnNumberOldPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
 												RowMovedNewPiece is RowNumberNewPiece + 1 .
 
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece > RowNumberOldPiece,
+																		ColumnNumberNewPiece > ColumnNumberOldPiece,
+																		RowMovedNewPiece is RowNumberNewPiece - 1,
+																		ColumnMovedNewPiece is ColumnNumberNewPiece - 1 .
+
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece > RowNumberOldPiece,
+																		ColumnNumberNewPiece < ColumnNumberOldPiece,
+																		RowMovedNewPiece is RowNumberNewPiece - 1,
+																		ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .
+
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
+																		ColumnNumberNewPiece > ColumnNumberOldPiece,
+																		RowMovedNewPiece is RowNumberNewPiece + 1,
+																		ColumnMovedNewPiece is ColumnNumberNewPiece - 1 .
+
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
+																		ColumnNumberNewPiece < ColumnNumberOldPiece,
+																		RowMovedNewPiece is RowNumberNewPiece + 1,
+																		ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .
 
 
 																											

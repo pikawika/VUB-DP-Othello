@@ -71,4 +71,5 @@
       - ```and_the_winner_is( [[*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, o]], Y) .```
 - Running a game for 2 human players
    - enclosing_piece/7
-      - ```initial_board( BoardState ), enclosing_piece( ColumnNumberOldPiece, RowNumberOldPiece, PlayerPieceToPlay, BoardState, ColumnNumberOldPiece, RowNumberOldPiece, AmountOfPiecesEnclosed ) .```
+      - ```initial_board( BoardState ), enclosing_piece( 3, 4, '*', BoardState, 5, 4, 1 ) .```
+      - ```initial_board( BoardState ), enclosing_piece( ColumnNumberNewPiece, RowNumberNewPiece, '*', BoardState, ColumnNumberOldPiece, RowNumberOldPiece, 1 ) .```
