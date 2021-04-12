@@ -36,34 +36,37 @@
          - Note: use w to write the whole list.
 - Board representation:
    - is_black/1
-      - is_black( InputPiece ) .
+      - ```is_black( InputPiece ) .```
    - is_white/1
-      - is_white( InputPiece ) .
+      - ```is_white( InputPiece ) .```
    - is_empty/1
-      - is_empty( InputPiece ) .
+      - ```is_empty( InputPiece ) .```
    - is_piece/1
-      - is_piece( InputPiece ) .
+      - ```is_piece( InputPiece ) .```
    - other_player/2
-      - other_player( PlayerPiece1, PlayerPiece2 ) .
+      - ```other_player( PlayerPiece1, PlayerPiece2 ) .```
    - row/3
-      - row( RowNumber, BoardState, RowState ) .
-      - row( 8, BoardState, RowState ) .
+      - ```row( RowNumber, BoardState, RowState ) .```
+      - ```row( 8, BoardState, RowState ) .```
    - column/3
-      - column( ColumnNumber, BoardState, RowState ) .
-      - column( 8, BoardState, RowState ) .
+      - ```column( ColumnNumber, BoardState, RowState ) .```
+      - ```column( 8, BoardState, RowState ) .```
    - square/4
-      - square( ColumnNumber, RowNumber,  BoardState, SquareState) .
-      - square( 8, 8,  BoardState, SquareState) .
+      - ```square( ColumnNumber, RowNumber,  BoardState, SquareState) .```
+      - ```square( 8, 8,  BoardState, SquareState) .```
    - empty square/3
-      - empty_square( 8, 8,  BoardState) .
+      - ```empty_square( 8, 8,  BoardState) .```
    - initial_board/1
-      - initial_board( X ) , display_board( X ) .
+      - ```initial_board( X ) , display_board( X ) .```
    - empty_board/1
-      - empty_board( X ) .
+      - ```empty_board( X ) .```
 - Spotting a winner:
    - count_pieces/3
-      - initial_board( X ), count_pieces( X, Y, Z) .
+      - ```initial_board( X ), count_pieces( X, Y, Z) .```
    - and_the_winner_is/2
-      - initial_board( X ), and_the_winner_is( X, Y) .
+      - ```initial_board( X ), and_the_winner_is( X, Y) .```
          - Draw; false
-      - and_the_winner_is( [[*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, o]], Y) .
+      - ```and_the_winner_is( [[*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, o]], Y) .```
+- Running a game for 2 human players
+   - enclosing_piece/7
+      - ```initial_board( BoardState ), enclosing_piece( ColumnNumberOldPiece, RowNumberOldPiece, PlayerPieceToPlay, BoardState, ColumnNumberOldPiece, RowNumberOldPiece, AmountOfPiecesEnclosed ) .```

@@ -176,3 +176,79 @@ and_the_winner_is(BoardState, PlayerPiece) :- valid_board_representation( BoardS
 												AmountOfWhitePieces > AmountOfBlackPieces .	
 
 
+/* ------------------------ END SPOTTING A WINNER ------------------------ */
+
+
+
+
+/* ------------------------ START HUMAN PLAYERS ------------------------ */
+
+/* given play predicate */
+play :- welcome,
+			initial_board( Board ),
+			display_board( Board ),
+			is_black( Black ),
+			play( Black, Board ) .
+	
+/* Succeeds when:
+	- Its first argument is the column number for a piece to be placed
+	- Its second argument is the row number for a piece to be placed
+	- Its third argument is the player which can make the move (piece)
+	- Its fourth argument is a valid board state
+	- Its fifth argument is the column number for a piece of the player that is already on the board and on the other side of the to place piece
+	- Its sixth argument is the row number for a piece of the player that is already on the board and on the other side of the to place piece
+	- Its seventh argument is the amount of pieces from the oponent the move would enclose
+	*/	
+enclosing_piece( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, BoardState,
+					ColumnNumberOldPiece, RowNumberOldPiece, _ ) :- valid_board_representation( BoardState ),
+																								enclosing_piece_finder( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, BoardState,
+					 																										ColumnNumberOldPiece, RowNumberOldPiece, 0, 'start' ) .
+
+
+% Found a piece of your own! Start moving!
+enclosing_piece_finder( ColumnNumberOldPiece, RowNumberOldPiece, PlayerPieceToPlay, BoardState,
+					 		ColumnNumberOldPiece, RowNumberOldPiece, 0, 'start' ) :- integer_between_1_and_8( ColumnNumberOldPiece ),
+																				integer_between_1_and_8( RowNumberOldPiece ),
+																				valid_board_representation( BoardState ),
+																				is_piece( PlayerPieceToPlay ),
+																				% start and end piece are equal and are of the current player
+																				square( ColumnNumberOldPiece, RowNumberOldPiece, BoardState, SquareState ),
+																				squ(_, _, PlayerPieceToPlay) = SquareState,
+																				% start moving to the left
+																				ColumnNumberNewPiece is ColumnNumberOldPiece - 1, 
+																				% move
+																				enclosing_piece_finder( ColumnNumberNewPiece, RowNumberOldPiece, PlayerPieceToPlay, BoardState,
+																												ColumnNumberOldPiece, RowNumberOldPiece, 0, 'left' ) .
+
+% Found a free square, if we have a valid length it's all good!
+%	NOTE; this assumes the recursive process is always started with count 0 and move 'start'
+enclosing_piece_finder( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, BoardState,
+					 		ColumnNumberOldPiece, RowNumberOldPiece, AmountOfPiecesEnclosed, _ ) :- integer_between_1_and_8( ColumnNumberNewPiece ),
+																									integer_between_1_and_8( RowNumberNewPiece ),
+																									integer_between_1_and_8( ColumnNumberOldPiece ),
+																									integer_between_1_and_8( RowNumberOldPiece ),
+																									valid_board_representation( BoardState ),
+																									is_piece( PlayerPieceToPlay ),
+																									% empty square found
+																									empty_square( ColumnNumberNewPiece, RowNumberNewPiece, BoardState ),
+																									% must have at least 1 enclosed pieces
+																									AmountOfPiecesEnclosed > 0 .
+																									
+
+% Found a piece of component, keep moving!
+enclosing_piece_finder( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, BoardState,
+					 		ColumnNumberOldPiece, RowNumberOldPiece, AmountOfPiecesEnclosed, 'left' ) :- integer_between_1_and_8( ColumnNumberNewPiece ),
+																											integer_between_1_and_8( RowNumberNewPiece ),
+																											integer_between_1_and_8( ColumnNumberOldPiece ),
+																											integer_between_1_and_8( RowNumberOldPiece ),
+																											valid_board_representation( BoardState ),
+																											is_piece( PlayerPieceToPlay ),
+																											% oponent square found
+																											square( ColumnNumberNewPiece, RowNumberNewPiece, BoardState, SquareState ),
+																											other_player( PlayerPieceToPlay, OtherPlayerPiece ),
+																											squ(_, _, OtherPlayerPiece) = SquareState.
+																											
+
+							 																	
+
+
