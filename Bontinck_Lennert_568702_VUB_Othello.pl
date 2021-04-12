@@ -125,9 +125,9 @@ initial_board( BoardState ) :- is_empty( EmptyPiece ),
 												[EmptyPiece, EmptyPiece, EmptyPiece, BlackPiece, WhitePiece, EmptyPiece, EmptyPiece, EmptyPiece],
 												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece],
 												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece],
-												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece]].
+												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece]] .
 
-/* Ssucceeds when its argument unies with a representation of the board with distinct variables in the places where the pieces would normally go. */
+/* Succeeds when its argument unies with a representation of the board with distinct variables in the places where the pieces would normally go. */
 empty_board( BoardState ) :- BoardState = [[_, _, _, _, _, _, _, _],
 											[_, _, _, _, _, _, _, _],
 											[_, _, _, _, _, _, _, _],
@@ -135,4 +135,44 @@ empty_board( BoardState ) :- BoardState = [[_, _, _, _, _, _, _, _],
 											[_, _, _, _, _, _, _, _],
 											[_, _, _, _, _, _, _, _],
 											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _]].
+											[_, _, _, _, _, _, _, _]] .
+
+
+/* ------------------------ END BOARD REPRESENTATION ------------------------ */
+
+
+
+
+/* ------------------------ START SPOTTING A WINNER ------------------------ */
+
+/* succeeds when:
+	- its first argument is a board representation
+	- its second argument represents the amount of black pieces on the board
+	- its third argument represents the amount of white pieces on the board */
+count_pieces( BoardState, AmountOfBlackPieces, AmountOfWhitePieces ) :- valid_board_representation( BoardState ),
+																		Columns = BoardState,
+																		is_black( BlackPiece ), 
+																		count_pieces_of_player_in_lists( Columns, BlackPiece, AmountOfBlackPieces ),
+																		is_white( WhitePiece ), 
+																		count_pieces_of_player_in_lists( Columns, WhitePiece, AmountOfWhitePieces ) .
+
+count_pieces_of_player_in_lists( [], _, 0 ) .
+% Using aggregate_all by finding it after looking for an aggragotor function following past use of mapping (buildin)
+% https://www.swi-prolog.org/pldoc/doc/_SWI_/library/aggregate.pl
+count_pieces_of_player_in_lists( [CurrentColumn | OtherColumns], PlayerSymbol, AmountOfPlayerPieces ) :- aggregate_all(count, member(PlayerSymbol, CurrentColumn), AmountOfPiecesToAdd), 
+																											count_pieces_of_player_in_lists( OtherColumns, PlayerSymbol, RemainingAmountOfPlayerPieces ), 
+																											AmountOfPlayerPieces is AmountOfPiecesToAdd + RemainingAmountOfPlayerPieces .
+
+/* Succeeds when:
+	- its first argument is a board representation
+	- its second is the player representation (piece) of the winner of the game */																		
+and_the_winner_is(BoardState, PlayerPiece) :- valid_board_representation( BoardState ),
+												is_black( PlayerPiece ),
+												count_pieces( BoardState, AmountOfBlackPieces, AmountOfWhitePieces ),
+												AmountOfBlackPieces > AmountOfWhitePieces .	
+and_the_winner_is(BoardState, PlayerPiece) :- valid_board_representation( BoardState ),
+												is_white( PlayerPiece ),
+												count_pieces( BoardState, AmountOfBlackPieces, AmountOfWhitePieces ),
+												AmountOfWhitePieces > AmountOfBlackPieces .	
+
+

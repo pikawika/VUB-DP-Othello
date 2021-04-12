@@ -60,3 +60,10 @@
       - initial_board( X ) , display_board( X ) .
    - empty_board/1
       - empty_board( X ) .
+- Spotting a winner:
+   - count_pieces/3
+      - initial_board( X ), count_pieces( X, Y, Z) .
+   - and_the_winner_is/2
+      - initial_board( X ), and_the_winner_is( X, Y) .
+         - Draw; false
+      - and_the_winner_is( [[*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, *], [*, *, *, *, *, *, *, o]], Y) .
