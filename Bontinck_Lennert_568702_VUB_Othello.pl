@@ -145,14 +145,14 @@ initial_board( BoardState ) :- is_empty( EmptyPiece ),
 												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece]] .
 
 /* Succeeds when its argument unies with a representation of the board with distinct variables in the places where the pieces would normally go. */
-empty_board( BoardState ) :- BoardState = [[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _],
-											[_, _, _, _, _, _, _, _]] .
+empty_board( BoardState ) :- BoardState = [[_1, _2, _3, _4, _5, _6, _7, _8],
+											[_9, _10, _11, _12, _13, _14, _15, _16],
+											[_17, _18, _19, _20, _21, _22, _23, _24],
+											[_25, _26, _27, _28, _29, _30, _31, _32],
+											[_33, _34, _35, _36, _37, _38, _39, _40],
+											[_41, _42, _43, _44, _45, _46, _47, _48],
+											[_49, _50, _51, _52, _53, _54, _55, _56],
+											[_57, _58, _59, _60, _61, _62, _63, _64]] .
 
 
 /* ------------------------ END BOARD REPRESENTATION ------------------------ */
@@ -233,6 +233,7 @@ enclosing_piece( ColumnNumberNewPiece, RowNumberNewPiece, PlayerPieceToPlay, Boa
 																							integer_between_1_and_8(RowNumberOldPiece),
 																							%check viable amount of pieces enclosed
 																							integer_between_1_and_6(AmountOfPiecesEnclosed),
+																							check_viable_amount_of_pieces_enclose(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece, AmountOfPiecesEnclosed),
 																							%check piece
 																							is_piece( PlayerPieceToPlay ),
 																							%check board
@@ -308,7 +309,8 @@ move_needed_between_squares(ColumnNumberOldPiece, RowNumberNewPiece, ColumnNumbe
 	ColumnNumberOldPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
 												RowMovedNewPiece is RowNumberNewPiece + 1 .
 
-move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+% diagonal moves not enabled for now.
+/*move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
 							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece > RowNumberOldPiece,
 																		ColumnNumberNewPiece > ColumnNumberOldPiece,
 																		RowMovedNewPiece is RowNumberNewPiece - 1,
@@ -330,11 +332,68 @@ move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumbe
 							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
 																		ColumnNumberNewPiece < ColumnNumberOldPiece,
 																		RowMovedNewPiece is RowNumberNewPiece + 1,
-																		ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .
+																		ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .*/
+
+% made to speed up the process by removing impossible ones
+check_viable_amount_of_pieces_enclose(ColumnNumberNewPiece, _, ColumnNumberOldPiece, _, 
+											AmountOfPiecesEnclosed) :- ColumnNumberOldPiece is ColumnNumberNewPiece + AmountOfPiecesEnclosed + 1 .
+
+check_viable_amount_of_pieces_enclose(ColumnNumberNewPiece, _, ColumnNumberOldPiece, _, 
+											AmountOfPiecesEnclosed) :- ColumnNumberOldPiece is ColumnNumberNewPiece - AmountOfPiecesEnclosed - 1 .
+
+check_viable_amount_of_pieces_enclose(_, RowNumberNewPiece, _, RowNumberOldPiece, 
+											AmountOfPiecesEnclosed) :- RowNumberOldPiece is RowNumberNewPiece + AmountOfPiecesEnclosed + 1 .
+
+check_viable_amount_of_pieces_enclose(_, RowNumberNewPiece, _, RowNumberOldPiece, 
+											AmountOfPiecesEnclosed) :- RowNumberOldPiece is RowNumberNewPiece - AmountOfPiecesEnclosed - 1 .
 
 
-																											
+/* Succeeds when there are no possible moves in the given game */
+no_more_legal_squares( BoardState ) :- valid_board_representation( BoardState ),
+											\+ ( enclosing_piece( _, _, _, BoardState, _, _, _ ) ) .
 
-							 																	
+/* Succeeds when:
+	- the player given in the first argument does not have any more legal moves
+	- in the game given in the second argument. */
+% if enclosing piece doesn't find anything then the player can't move.
+no_more_legal_squares( PlayerPiece, BoardState ) :- valid_board_representation( BoardState ),
+														is_piece( PlayerPiece ), 
+														\+ ( enclosing_piece( _, _, _, BoardState, _, _, _ ) ) .		
 
 
+/* Recursive loop to play the game based on its arguments:
+	- 1: current player
+	- 2: current board state */
+
+% no more moves in the game for anyone and there is a winner
+play( _, BoardState ) :- no_more_legal_squares( BoardState ),
+										and_the_winner_is( BoardState, Winner ),
+										report_winner( Winner ) .
+
+% no more moves in the game for anyone and it is a draw
+play( _, BoardState ) :- no_more_legal_squares( BoardState ),
+										\+ ( and_the_winner_is( BoardState, _ ) ),
+										report_stalemate .
+
+% no more moves for the current player, turn goes to other player
+play( CurrentPlayer, BoardState ) :- no_more_legal_squares( CurrentPlayer, BoardState ),
+										other_player( CurrentPlayer, OtherPlayerPiece ),
+										play( OtherPlayerPiece, BoardState ) .
+
+% Player can do a move, ask him for input, do the move, show the move and switch players.
+play( CurrentPlayer, BoardState ) :- \+ (no_more_legal_squares( CurrentPlayer, BoardState )),
+										is_piece(CurrentPlayer),
+										valid_board_representation( BoardState ),
+										%ask legal move
+										get_legal_move( CurrentPlayer, ColumnNumberNewPiece, RowNumberNewPiece, BoardState ),
+										report_move( CurrentPlayer, ColumnNumberNewPiece, RowNumberNewPiece ), 
+										%calculate new board
+										fill_and_flip_squares( ColumnNumberNewPiece, RowNumberNewPiece, CurrentPlayer, BoardState, NewBoardState ), 
+										abort,
+										%switch to other player with new board
+										other_player( CurrentPlayer, OtherPlayerPiece ),
+										play( OtherPlayerPiece, NewBoardState ) .
+
+
+
+							 																

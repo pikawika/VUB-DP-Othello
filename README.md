@@ -73,3 +73,7 @@
    - enclosing_piece/7
       - ```initial_board( BoardState ), enclosing_piece( 3, 4, '*', BoardState, 5, 4, 1 ) .```
       - ```initial_board( BoardState ), enclosing_piece( ColumnNumberNewPiece, RowNumberNewPiece, '*', BoardState, ColumnNumberOldPiece, RowNumberOldPiece, 1 ) .```
+   - no_more_legal_squares/1
+      - ```initial_board( BoardState ), no_more_legal_squares( BoardState ) .```
+   - no_more_legal_squares/2
+      - ```initial_board( BoardState ),  no_more_legal_squares( PlayerPiece, BoardState ) .```
