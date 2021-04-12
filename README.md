@@ -31,9 +31,11 @@
    
 ## Testing the created predicates
 - Supplementary predicates:
-    - valid_board_representation/1
+   - valid_board_representation/1
       - valid_board_representation( X ).
          - Note: use w to write the whole list.
+   - player_square/4
+      - initial_board( BoardState), player_square( ColumnNumber, RowNumber, BoardState, PlayerPiece ) . 
 - Board representation:
    - is_black/1
       - ```is_black( InputPiece ) .```
