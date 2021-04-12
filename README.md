@@ -19,6 +19,7 @@
 - Supplied and thus unedited files for assignment:
    - [fill.pl](fill.pl)
    - [io.pl](io.pl)
+      - Small note: report_illegal/0 was removed from the export of the module since it was not defined in the io library and gave errors.
 - The [assignment pdf](assignment.pdf)
 - Single loadable file with comments and methods as prescribed in the assignment
    - [Bontinck_Lennert_568702_VUB_Othello.pl](Bontinck_Lennert_568702_VUB_Othello.pl)
@@ -28,3 +29,34 @@
 - Go to the root of this GitHub repository in your terminal
 - use:  ```swipl -s Bontinck_Lennert_568702_VUB_Othello.pl```
    
+## Testing the created predicates
+- Supplementary predicates:
+    - valid_board_representation/1
+      - valid_board_representation( X ).
+         - Note: use w to write the whole list.
+- Board representation:
+   - is_black/1
+      - is_black( InputPiece ) .
+   - is_white/1
+      - is_white( InputPiece ) .
+   - is_empty/1
+      - is_empty( InputPiece ) .
+   - is_piece/1
+      - is_piece( InputPiece ) .
+   - other_player/2
+      - other_player( PlayerPiece1, PlayerPiece2 ) .
+   - row/3
+      - row( RowNumber, BoardState, RowState ) .
+      - row( 8, BoardState, RowState ) .
+   - column/3
+      - column( ColumnNumber, BoardState, RowState ) .
+      - column( 8, BoardState, RowState ) .
+   - square/4
+      - square( ColumnNumber, RowNumber,  BoardState, SquareState) .
+      - square( 8, 8,  BoardState, SquareState) .
+   - empty square/3
+      - empty_square( 8, 8,  BoardState) .
+   - initial_board/1
+      - initial_board( X ) , display_board( X ) .
+   - empty_board/1
+      - empty_board( X ) .
