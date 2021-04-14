@@ -116,7 +116,9 @@ column( ColumnNumber, BoardState, ColState ) :- integer_between_1_and_8( ColumnN
 	- its fourth argument is the representation of the square at the given column and row. */
 square( ColumnNumber, RowNumber, BoardState, SquareState ) :- integer_between_1_and_8( ColumnNumber ),
 																integer_between_1_and_8( RowNumber ),
-																valid_board_representation( BoardState ),
+																%checking if the board is valid would instantiate the "empty board" when calling flipp.
+																%     This caused everything to be horribly slow since all fields would be instantiated to *
+																%valid_board_representation( BoardState ),
 																Columns = BoardState,
 																nth1( ColumnNumber, Columns, Column ), 
 																nth1( RowNumber, Column, Square ), 
@@ -144,7 +146,7 @@ initial_board( BoardState ) :- is_empty( EmptyPiece ),
 												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece],
 												[EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece]] .
 
-/* Succeeds when its argument unies with a representation of the board with distinct variables in the places where the pieces would normally go. */
+/* Succeeds when its argument unifies with a representation of the board with distinct variables in the places where the pieces would normally go. */
 empty_board( BoardState ) :- BoardState = [[_1, _2, _3, _4, _5, _6, _7, _8],
 											[_9, _10, _11, _12, _13, _14, _15, _16],
 											[_17, _18, _19, _20, _21, _22, _23, _24],
@@ -388,8 +390,9 @@ play( CurrentPlayer, BoardState ) :- \+ (no_more_legal_squares( CurrentPlayer, B
 										get_legal_move( CurrentPlayer, ColumnNumberNewPiece, RowNumberNewPiece, BoardState ),
 										report_move( CurrentPlayer, ColumnNumberNewPiece, RowNumberNewPiece ), 
 										%calculate new board
-										fill_and_flip_squares( ColumnNumberNewPiece, RowNumberNewPiece, CurrentPlayer, BoardState, NewBoardState ), 
-										abort,
+										fill_and_flip_squares( ColumnNumberNewPiece, RowNumberNewPiece, CurrentPlayer, BoardState, NewBoardState ),
+										%show new board
+										display_board( NewBoardState ),
 										%switch to other player with new board
 										other_player( CurrentPlayer, OtherPlayerPiece ),
 										play( OtherPlayerPiece, NewBoardState ) .
