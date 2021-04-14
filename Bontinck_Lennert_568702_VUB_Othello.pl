@@ -311,8 +311,8 @@ move_needed_between_squares(ColumnNumberOldPiece, RowNumberNewPiece, ColumnNumbe
 	ColumnNumberOldPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
 												RowMovedNewPiece is RowNumberNewPiece + 1 .
 
-% diagonal moves not enabled for now.
-/*move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
+% diagonal moves.
+move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumberOldPiece, RowNumberOldPiece,
 							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece > RowNumberOldPiece,
 																		ColumnNumberNewPiece > ColumnNumberOldPiece,
 																		RowMovedNewPiece is RowNumberNewPiece - 1,
@@ -334,7 +334,7 @@ move_needed_between_squares(ColumnNumberNewPiece, RowNumberNewPiece, ColumnNumbe
 							ColumnMovedNewPiece, RowMovedNewPiece) :- RowNumberNewPiece < RowNumberOldPiece,
 																		ColumnNumberNewPiece < ColumnNumberOldPiece,
 																		RowMovedNewPiece is RowNumberNewPiece + 1,
-																		ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .*/
+																		ColumnMovedNewPiece is ColumnNumberNewPiece + 1 .
 
 % made to speed up the process by removing impossible ones
 check_viable_amount_of_pieces_enclose(ColumnNumberNewPiece, _, ColumnNumberOldPiece, _, 
